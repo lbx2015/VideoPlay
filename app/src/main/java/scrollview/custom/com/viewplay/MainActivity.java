@@ -1,7 +1,11 @@
 package scrollview.custom.com.viewplay;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -64,14 +68,18 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setPluginState(WebSettings.PluginState.ON);
         webSettings.setGeolocationEnabled(true);
         String js = "javascript: var v=document.getElementsByTagName('video')[0]; "
-                + "v.play(); ";
+                + "v.play(); " + "v.webkitEnterFullscreen(); ";
 
         //start play
         webView.loadUrl(js);
-        String jsFullScreen = "javascript: var v=document.getElementsByTagName('video')[0]; " + "v.webkitEnterFullscreen(); ";
-        webView.loadUrl(jsFullScreen);
 
-        StatusBarUtil.setTransparent(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        }
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
     }
@@ -81,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         String js = "javascript: var v=document.getElementsByTagName('video')[0]; "
                 + "v.play(); ";
-
         //start play
         webView.loadUrl(js);
     }
